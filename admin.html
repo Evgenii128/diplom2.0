@@ -98,6 +98,7 @@
         </aside>
 
         <main class="content-area">
+          <!-- ДАШБОРД (ИСПРАВЛЕННАЯ ВЕРСИЯ - БЕЗ КРУГОВОГО ГРАФИКА) -->
           <section class="content-section active" id="dashboard">
             <div class="section-header">
               <h2><i class="fas fa-tachometer-alt"></i> Панель управления</h2>
@@ -105,42 +106,225 @@
                 <i class="fas fa-sync-alt"></i> Обновить
               </button>
             </div>
-            <div class="stats-grid">
-              <div class="stat-card">
-                <div class="stat-icon">
-                  <i class="fas fa-file-signature"></i>
+
+            <!-- Ключевые показатели (KPI) -->
+            <div class="kpi-grid">
+              <div class="kpi-card revenue">
+                <div class="kpi-icon">
+                  <i class="fas fa-chart-line"></i>
                 </div>
-                <div class="stat-content">
-                  <h3>Новые заявки</h3>
-                  <div class="stat-value" id="statNewRequests">0</div>
-                </div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-tasks"></i></div>
-                <div class="stat-content">
-                  <h3>Всего заявок</h3>
-                  <div class="stat-value" id="statTotalRequests">0</div>
+                <div class="kpi-content">
+                  <div class="kpi-label">Выручка</div>
+                  <div class="kpi-value" id="statTotalRevenue">0 ₽</div>
+                  <div class="kpi-trend positive">
+                    <i class="fas fa-arrow-up"></i> +12.5%
+                  </div>
                 </div>
               </div>
-              <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-users"></i></div>
-                <div class="stat-content">
-                  <h3>Клиенты</h3>
-                  <div class="stat-value" id="statClients">0</div>
+
+              <div class="kpi-card contracts">
+                <div class="kpi-icon">
+                  <i class="fas fa-file-contract"></i>
+                </div>
+                <div class="kpi-content">
+                  <div class="kpi-label">Активные договоры</div>
+                  <div class="kpi-value" id="statActiveContracts">0</div>
+                  <div class="kpi-trend neutral">
+                    <i class="fas fa-minus"></i> без изменений
+                  </div>
                 </div>
               </div>
-              <div class="stat-card">
-                <div class="stat-icon">
-                  <i class="fas fa-concierge-bell"></i>
+
+              <div class="kpi-card invoices">
+                <div class="kpi-icon">
+                  <i class="fas fa-clock"></i>
                 </div>
-                <div class="stat-content">
-                  <h3>Услуги</h3>
-                  <div class="stat-value" id="statServices">0</div>
+                <div class="kpi-content">
+                  <div class="kpi-label">Ожидают оплаты</div>
+                  <div class="kpi-value" id="statPendingInvoices">0</div>
+                  <div class="kpi-trend negative">
+                    <i class="fas fa-exclamation-triangle"></i> 3 просрочено
+                  </div>
+                </div>
+              </div>
+
+              <div class="kpi-card clients">
+                <div class="kpi-icon">
+                  <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="kpi-content">
+                  <div class="kpi-label">Клиенты</div>
+                  <div class="kpi-value" id="statClients">0</div>
+                  <div class="kpi-trend positive">
+                    <i class="fas fa-arrow-up"></i> +2 новых
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Статистика заявок -->
+            <div class="stats-row">
+              <div class="stats-card main">
+                <div class="stats-header">
+                  <h3><i class="fas fa-tasks"></i> Заявки</h3>
+                  <span class="stats-badge">Обновлено сейчас</span>
+                </div>
+                <div class="stats-main-simple">
+                  <div class="stats-list-full">
+                    <div class="stats-item">
+                      <span class="stats-item-label"
+                        ><span class="dot new"></span> Новые</span
+                      >
+                      <span class="stats-item-value" id="statNewRequests"
+                        >0</span
+                      >
+                    </div>
+                    <div class="stats-item">
+                      <span class="stats-item-label"
+                        ><span class="dot progress"></span> В работе</span
+                      >
+                      <span class="stats-item-value" id="statInProgressRequests"
+                        >0</span
+                      >
+                    </div>
+                    <div class="stats-item">
+                      <span class="stats-item-label"
+                        ><span class="dot completed"></span> Завершено</span
+                      >
+                      <span class="stats-item-value" id="statCompletedRequests"
+                        >0</span
+                      >
+                    </div>
+                    <div class="stats-item total">
+                      <span class="stats-item-label">Всего заявок</span>
+                      <span class="stats-item-value" id="statTotalRequests"
+                        >0</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="stats-card">
+                <div class="stats-header">
+                  <h3><i class="fas fa-chart-pie"></i> Распределение</h3>
+                </div>
+                <div class="stats-pie-container">
+                  <div class="pie-legend-full">
+                    <div class="legend-item">
+                      <span class="color-dot services"></span>
+                      <span>Услуги</span>
+                      <span class="legend-value" id="statServices">0</span>
+                    </div>
+                    <div class="legend-item">
+                      <span class="color-dot contracts"></span>
+                      <span>Договоры</span>
+                      <span class="legend-value" id="statContractsCount"
+                        >0</span
+                      >
+                    </div>
+                    <div class="legend-item">
+                      <span class="color-dot invoices"></span>
+                      <span>Счета</span>
+                      <span class="legend-value" id="statInvoicesCount">0</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Быстрые действия и последние активности -->
+            <div class="dashboard-grid">
+              <div class="dashboard-card recent">
+                <div class="card-header">
+                  <h3><i class="fas fa-history"></i> Последние заявки</h3>
+                  <a
+                    href="#"
+                    onclick="
+                      document
+                        .querySelector('[data-section=&quot;requests&quot;]')
+                        .click();
+                      return false;
+                    "
+                    class="card-link"
+                    >Все заявки <i class="fas fa-arrow-right"></i
+                  ></a>
+                </div>
+                <div class="recent-list" id="recentRequests">
+                  <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i> Загрузка...
+                  </div>
+                </div>
+              </div>
+
+              <div class="dashboard-card quick-actions-modern">
+                <div class="card-header">
+                  <h3><i class="fas fa-bolt"></i> Быстрые действия</h3>
+                </div>
+                <div class="actions-modern-grid">
+                  <button
+                    class="action-modern"
+                    onclick="showModal('serviceModal')"
+                  >
+                    <i class="fas fa-concierge-bell"></i>
+                    <span>Новая услуга</span>
+                  </button>
+                  <button
+                    class="action-modern"
+                    onclick="showModal('clientModal')"
+                  >
+                    <i class="fas fa-user-plus"></i>
+                    <span>Новый клиент</span>
+                  </button>
+                  <button
+                    class="action-modern"
+                    onclick="showModal('contractModal')"
+                  >
+                    <i class="fas fa-file-contract"></i>
+                    <span>Новый договор</span>
+                  </button>
+                  <button
+                    class="action-modern"
+                    onclick="showModal('invoiceModal')"
+                  >
+                    <i class="fas fa-receipt"></i>
+                    <span>Выставить счет</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="dashboard-card upcoming">
+                <div class="card-header">
+                  <h3><i class="fas fa-calendar-alt"></i> Скоро истекают</h3>
+                </div>
+                <div class="upcoming-list" id="upcomingDeadlines">
+                  <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i> Загрузка...
+                  </div>
+                </div>
+              </div>
+
+              <div class="dashboard-card activity">
+                <div class="card-header">
+                  <h3><i class="fas fa-chart-bar"></i> Активность</h3>
+                  <span class="badge">За 7 дней</span>
+                </div>
+                <div class="activity-chart">
+                  <div class="bar-chart">
+                    <div class="bar" style="height: 40px"><span>Пн</span></div>
+                    <div class="bar" style="height: 65px"><span>Вт</span></div>
+                    <div class="bar" style="height: 55px"><span>Ср</span></div>
+                    <div class="bar" style="height: 80px"><span>Чт</span></div>
+                    <div class="bar" style="height: 45px"><span>Пт</span></div>
+                    <div class="bar" style="height: 30px"><span>Сб</span></div>
+                    <div class="bar" style="height: 25px"><span>Вс</span></div>
+                  </div>
                 </div>
               </div>
             </div>
           </section>
 
+          <!-- Секция Заявки -->
           <section class="content-section" id="requests">
             <div class="section-header">
               <h2><i class="fas fa-file-signature"></i> Заявки от клиентов</h2>
@@ -183,6 +367,7 @@
             </div>
           </section>
 
+          <!-- Секция Услуги -->
           <section class="content-section" id="services">
             <div class="section-header">
               <h2><i class="fas fa-concierge-bell"></i> Услуги компании</h2>
@@ -243,6 +428,7 @@
             </div>
           </section>
 
+          <!-- Секция Клиенты -->
           <section class="content-section" id="clients">
             <div class="section-header">
               <h2><i class="fas fa-users"></i> Клиенты</h2>
@@ -294,6 +480,7 @@
             </div>
           </section>
 
+          <!-- Секция Прайс-листы -->
           <section class="content-section" id="price-lists">
             <div class="section-header">
               <h2><i class="fas fa-file-invoice-dollar"></i> Прайс-листы</h2>
@@ -312,6 +499,7 @@
             <div id="priceListsContainer"></div>
           </section>
 
+          <!-- Секция Договоры -->
           <section class="content-section" id="contracts">
             <div class="section-header">
               <h2><i class="fas fa-file-contract"></i> Договоры</h2>
@@ -365,6 +553,7 @@
             </div>
           </section>
 
+          <!-- Секция Счета -->
           <section class="content-section" id="invoices">
             <div class="section-header">
               <h2><i class="fas fa-receipt"></i> Счета</h2>
@@ -391,7 +580,6 @@
                   <option value="pending">Ожидают оплаты</option>
                   <option value="paid">Оплаченные</option>
                   <option value="cancelled">Отмененные</option>
-                  <option value="overdue">Просроченные</option>
                 </select>
               </div>
             </div>
@@ -421,9 +609,7 @@
 
       <footer class="app-footer">
         <div class="footer-content">
-          <div>
-            Курсовой проект: ООО "РЖД-ТехСервис" | Система подачи заявлений
-          </div>
+          <div>ООО "РЖД-ТехСервис" | Система подачи заявлений</div>
           <div class="tech-stack">
             <span class="badge">MySQL</span>
             <span class="badge">Node.js</span>
@@ -433,6 +619,7 @@
       </footer>
     </div>
 
+    <!-- Модальное окно Услуги -->
     <div class="modal-overlay" id="serviceModal">
       <div class="modal modal-lg">
         <div class="modal-header">
@@ -511,6 +698,7 @@
       </div>
     </div>
 
+    <!-- Модальное окно Клиенты -->
     <div class="modal-overlay" id="clientModal">
       <div class="modal modal-lg">
         <div class="modal-header">
@@ -569,6 +757,7 @@
       </div>
     </div>
 
+    <!-- Модальное окно Прайс-листы -->
     <div class="modal-overlay" id="priceListModal">
       <div class="modal modal-lg">
         <div class="modal-header">
@@ -632,6 +821,7 @@
       </div>
     </div>
 
+    <!-- Модальное окно Договоры -->
     <div class="modal-overlay" id="contractModal">
       <div class="modal modal-lg">
         <div class="modal-header">
@@ -710,6 +900,7 @@
       </div>
     </div>
 
+    <!-- Модальное окно Счета -->
     <div class="modal-overlay" id="invoiceModal">
       <div class="modal modal-lg">
         <div class="modal-header">
@@ -784,6 +975,7 @@
       </div>
     </div>
 
+    <!-- Модальное окно Изменение статуса заявки -->
     <div class="modal-overlay" id="requestStatusModal">
       <div class="modal">
         <div class="modal-header">
@@ -831,6 +1023,8 @@
         </div>
       </div>
     </div>
+
+    <!-- Модальное окно Подтверждение удаления -->
     <div class="modal-overlay" id="deleteModal">
       <div class="modal">
         <div class="modal-header">

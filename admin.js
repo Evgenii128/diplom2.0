@@ -108,7 +108,7 @@ async function checkDatabaseConnection() {
 
     if (data.status === "OK") {
       indicator.className = "status-indicator connected";
-      statusText.textContent = `Подключено к MySQL`;
+      statusText.textContent = ``;
     } else {
       throw new Error("Ошибка подключения");
     }
@@ -182,6 +182,209 @@ function loadSectionData(sectionId) {
       break;
   }
 }
+
+// ==================== ФУНКЦИИ ДЛЯ ДАШБОРДА ====================
+
+async function loadDashboardData() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/dashboard/stats`);
+    const data = await response.json();
+
+    console.log("Данные дашборда:", data); // Для отладки
+
+    // Основные KPI
+    if (document.getElementById("statTotalRevenue")) {
+      document.getElementById("statTotalRevenue").textContent = formatCurrency(
+        data.totalRevenue || 0,
+      );
+    }
+
+    if (document.getElementById("statActiveContracts")) {
+      document.getElementById("statActiveContracts").textContent =
+        data.activeContracts || 0;
+    }
+
+    if (document.getElementById("statPendingInvoices")) {
+      document.getElementById("statPendingInvoices").textContent =
+        data.pendingInvoices || 0;
+    }
+
+    if (document.getElementById("statClients")) {
+      document.getElementById("statClients").textContent = data.clients || 0;
+    }
+
+    // Статистика заявок
+    if (document.getElementById("statNewRequests")) {
+      document.getElementById("statNewRequests").textContent =
+        data.newRequests || 0;
+    }
+
+    if (document.getElementById("statTotalRequests")) {
+      document.getElementById("statTotalRequests").textContent =
+        data.totalRequests || 0;
+    }
+
+    if (document.getElementById("statInProgressRequests")) {
+      document.getElementById("statInProgressRequests").textContent =
+        data.inProgressRequests || 0;
+    }
+
+    if (document.getElementById("statCompletedRequests")) {
+      document.getElementById("statCompletedRequests").textContent =
+        data.completedRequests || 0;
+    }
+
+    // Распределение
+    if (document.getElementById("statServices")) {
+      document.getElementById("statServices").textContent = data.services || 0;
+    }
+
+    if (document.getElementById("statContractsCount")) {
+      document.getElementById("statContractsCount").textContent =
+        data.totalContracts || 0;
+    }
+
+    if (document.getElementById("statInvoicesCount")) {
+      document.getElementById("statInvoicesCount").textContent =
+        data.totalInvoices || 0;
+    }
+
+    // Загрузка последних заявок
+    loadRecentRequests();
+
+    // Загрузка предстоящих дедлайнов
+    loadUpcomingDeadlines();
+
+    showNotification("Данные дашборда обновлены", "success");
+  } catch (error) {
+    console.error("Ошибка дашборда:", error);
+    showNotification("Ошибка загрузки данных дашборда", "error");
+  }
+}
+
+async function loadRecentRequests() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/requests?limit=5`);
+    const requests = await response.json();
+
+    const container = document.getElementById("recentRequests");
+    if (!container) return;
+
+    if (requests.length === 0) {
+      container.innerHTML =
+        '<div class="empty-state"><i class="fas fa-inbox"></i><p>Нет заявок</p></div>';
+      return;
+    }
+
+    let html = "";
+    requests.slice(0, 5).forEach((req) => {
+      const date = new Date(req.created_at).toLocaleDateString("ru-RU", {
+        day: "numeric",
+        month: "short",
+      });
+
+      let statusText = "";
+      let statusClass = "";
+      switch (req.status) {
+        case "new":
+          statusText = "Новая";
+          statusClass = "new";
+          break;
+        case "in_progress":
+          statusText = "В работе";
+          statusClass = "progress";
+          break;
+        case "completed":
+          statusText = "Завершена";
+          statusClass = "completed";
+          break;
+        case "cancelled":
+          statusText = "Отклонена";
+          statusClass = "cancelled";
+          break;
+        default:
+          statusText = req.status;
+          statusClass = "new";
+      }
+
+      html += `
+        <div class="recent-item" onclick="viewRequestDetails(${req.id})" style="cursor: pointer;">
+          <div class="recent-info">
+            <h4>${req.full_name || "Клиент"}</h4>
+            <p>${req.request_number || "Б/Н"} • ${date}</p>
+          </div>
+          <span class="recent-status ${statusClass}">${statusText}</span>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  } catch (error) {
+    console.error("Ошибка загрузки последних заявок:", error);
+    const container = document.getElementById("recentRequests");
+    if (container) {
+      container.innerHTML =
+        '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Ошибка загрузки</p></div>';
+    }
+  }
+}
+
+async function loadUpcomingDeadlines() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/contracts?status=active`);
+    const contracts = await response.json();
+
+    const container = document.getElementById("upcomingDeadlines");
+    if (!container) return;
+
+    if (!contracts || contracts.length === 0) {
+      container.innerHTML =
+        '<div class="empty-state"><i class="fas fa-calendar-check"></i><p>Нет ближайших дедлайнов</p></div>';
+      return;
+    }
+
+    const today = new Date();
+    const upcoming = contracts
+      .filter((c) => c.end_date && new Date(c.end_date) > today)
+      .sort((a, b) => new Date(a.end_date) - new Date(b.end_date))
+      .slice(0, 4);
+
+    if (upcoming.length === 0) {
+      container.innerHTML =
+        '<div class="empty-state"><i class="fas fa-calendar-check"></i><p>Нет ближайших дедлайнов</p></div>';
+      return;
+    }
+
+    let html = "";
+    upcoming.forEach((contract) => {
+      const endDate = new Date(contract.end_date);
+      const daysLeft = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+      const warningClass =
+        daysLeft <= 3 ? "danger" : daysLeft <= 7 ? "warning" : "";
+
+      html += `
+        <div class="upcoming-item ${warningClass}" onclick="viewContract(${contract.id})">
+          <div class="recent-info">
+            <h4>${contract.contract_number}</h4>
+            <p>${contract.company_name || "Клиент"} • осталось ${daysLeft} дн.</p>
+          </div>
+          <i class="fas ${daysLeft <= 3 ? "fa-exclamation-triangle text-danger" : "fa-calendar-alt"}"></i>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  } catch (error) {
+    console.error("Ошибка загрузки дедлайнов:", error);
+    const container = document.getElementById("upcomingDeadlines");
+    if (container) {
+      container.innerHTML =
+        '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><p>Ошибка загрузки</p></div>';
+    }
+  }
+}
+
+// ==================== ОСТАЛЬНЫЕ ФУНКЦИИ (БЕЗ ИЗМЕНЕНИЙ) ====================
 
 async function loadRequests() {
   try {
@@ -646,36 +849,6 @@ async function viewRequestDetails(id) {
   } catch (error) {
     console.error("Ошибка загрузки деталей заявки:", error);
     showNotification("Ошибка загрузки деталей заявки", "error");
-  }
-}
-
-async function loadDashboardData() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/dashboard/stats`);
-    const data = await response.json();
-
-    document.getElementById("statNewRequests").textContent =
-      data.newRequests || 0;
-    document.getElementById("statTotalRequests").textContent =
-      data.totalRequests || 0;
-    document.getElementById("statClients").textContent = data.clients || 0;
-    document.getElementById("statServices").textContent = data.services || 0;
-
-    if (document.getElementById("statActiveContracts")) {
-      document.getElementById("statActiveContracts").textContent =
-        data.activeContracts || 0;
-    }
-    if (document.getElementById("statPendingInvoices")) {
-      document.getElementById("statPendingInvoices").textContent =
-        data.pendingInvoices || 0;
-    }
-    if (document.getElementById("statTotalRevenue")) {
-      document.getElementById("statTotalRevenue").textContent = formatCurrency(
-        data.totalRevenue || 0,
-      );
-    }
-  } catch (error) {
-    console.error("Ошибка дашборда:", error);
   }
 }
 
@@ -2088,6 +2261,7 @@ function askDelete(action, message = "Вы уверены?") {
 }
 
 window.toggleTheme = toggleTheme;
+window.logout = logout;
 window.loadDashboardData = loadDashboardData;
 window.loadRequests = loadRequests;
 window.updateRequestStatus = updateRequestStatus;
@@ -2126,3 +2300,5 @@ window.markInvoicePaid = markInvoicePaid;
 window.showModal = showModal;
 window.closeModal = closeModal;
 window.askDelete = askDelete;
+window.loadRecentRequests = loadRecentRequests;
+window.loadUpcomingDeadlines = loadUpcomingDeadlines;

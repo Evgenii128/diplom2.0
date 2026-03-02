@@ -723,12 +723,10 @@ app.post("/api/services", async (req, res) => {
       [service_code],
     );
     if (existing.length > 0) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: `Код услуги '${service_code}' уже существует`,
-        });
+      return res.status(400).json({
+        success: false,
+        error: `Код услуги '${service_code}' уже существует`,
+      });
     }
 
     const [result] = await pool.execute(
@@ -782,12 +780,10 @@ app.put("/api/services/:id", async (req, res) => {
       [service_code, id],
     );
     if (existing.length > 0) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: `Код услуги '${service_code}' уже используется`,
-        });
+      return res.status(400).json({
+        success: false,
+        error: `Код услуги '${service_code}' уже используется`,
+      });
     }
 
     const [result] = await pool.execute(
@@ -1326,12 +1322,10 @@ app.post("/api/contracts", async (req, res) => {
       [contract_number],
     );
     if (existing.length > 0) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: `Договор с номером '${contract_number}' уже существует`,
-        });
+      return res.status(400).json({
+        success: false,
+        error: `Договор с номером '${contract_number}' уже существует`,
+      });
     }
 
     const [result] = await pool.execute(
@@ -1399,12 +1393,10 @@ app.put("/api/contracts/:id", async (req, res) => {
       [contract_number, id],
     );
     if (existing.length > 0) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: `Договор с номером '${contract_number}' уже существует`,
-        });
+      return res.status(400).json({
+        success: false,
+        error: `Договор с номером '${contract_number}' уже существует`,
+      });
     }
 
     const [result] = await pool.execute(
@@ -1556,12 +1548,10 @@ app.post("/api/invoices", async (req, res) => {
       [invoice_number],
     );
     if (existing.length > 0) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: `Счет с номером '${invoice_number}' уже существует`,
-        });
+      return res.status(400).json({
+        success: false,
+        error: `Счет с номером '${invoice_number}' уже существует`,
+      });
     }
 
     const [result] = await pool.execute(
@@ -1634,12 +1624,10 @@ app.put("/api/invoices/:id", async (req, res) => {
       [invoice_number, id],
     );
     if (existing.length > 0) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: `Счет с номером '${invoice_number}' уже существует`,
-        });
+      return res.status(400).json({
+        success: false,
+        error: `Счет с номером '${invoice_number}' уже существует`,
+      });
     }
 
     const [result] = await pool.execute(
